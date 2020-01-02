@@ -1,6 +1,6 @@
 ﻿using Assets.Scripts.Controller;
-using System;
-using System.Collections;
+using Assets.Scripts.Data;
+using Assets.Scripts.Model;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,40 +14,54 @@ namespace Assets.Scripts.Fabric
         [SerializeField] private GameController _gameController;
 
         [Header("Options")]
-        [Range(0.001f, 0.05f)]
-        [SerializeField] private float _colorDelta = 0.003f;
+        [Range(0.05f, 0.2f)]
+        [SerializeField] private float _colorDelta = 0.1f;
 
         [Header("Parameters")]
         [SerializeField] private GameObject _blockPrefab;
-        [SerializeField] private GameObject _spawnPoint;        
+        [SerializeField] private GameObject _spawnPlane;
+        [SerializeField] private GameObject _startBlock; 
+        [SerializeField] private List<BlockGenerateData> _blockDatas = new List<BlockGenerateData>();
 
         private Gradient _gradient;
         private GradientColorKey[] _colorKeys;
-        private GradientAlphaKey[] _alphaKeys;        
+        private GradientAlphaKey[] _alphaKeys;
+
+        private Color _lastColor;
 
         private float _currentEvaluate = 0;   
         private Vector3 _lastStackedBlockSize;
-
-        private GameObject _newBlock;
-
+ 
         private List<GameObject> _allBlocks = new List<GameObject>();
 
         private void Awake()
         {
             PrepareDelegates();
 
-            ResetColorOptions();
+            CreateNewGradient(GetRandomColor(), GetRandomColor());
+
+            SetupStartBlock();
+        }
+
+        private void SetupStartBlock()
+        {
+            SetColor(_startBlock);
         }
 
         public GameObject CreateNewBlock()
         {
-            _newBlock = Instantiate(_blockPrefab, _spawnPoint.transform.position, Quaternion.identity);
-            _allBlocks.Add(_newBlock);
-            SetupNewBlock();
+            BlockGenerateData newData = _blockDatas[UnityEngine.Random.Range(0, _blockDatas.Count)];
+            GameObject newSpawnPoint = newData.spawnPoints[UnityEngine.Random.Range(0, newData.spawnPoints.Count)];
+
+            GameObject newBlock = Instantiate(_blockPrefab, newSpawnPoint.transform.position, Quaternion.identity);
+            newBlock.GetComponent<Block>().SetNewData(newData);
+
+            _allBlocks.Add(newBlock);
+            SetupNewBlock(newBlock);
 
             onBlockGenerated?.Invoke();
 
-            return (_newBlock);
+            return (newBlock);
         }
 
         private void PrepareDelegates()
@@ -57,7 +71,7 @@ namespace Assets.Scripts.Fabric
 
         private void OnGameLost()
         {
-            ResetColorOptions();
+            CreateNewGradient(GetRandomColor(), GetRandomColor());
             DestroyAllBlocks();
         }
 
@@ -71,20 +85,20 @@ namespace Assets.Scripts.Fabric
             _allBlocks = new List<GameObject>();
         }
 
-        private void ResetColorOptions()
+        private void CreateNewGradient(Color firstColor, Color secondColor)
         {
             _gradient = new Gradient();
              
             _colorKeys = new GradientColorKey[2];
             _alphaKeys = new GradientAlphaKey[2];
 
-            _colorKeys[0].color = GetRandomColor();
+            _colorKeys[0].color = firstColor;
             _colorKeys[0].time = 0.0f;
 
             _alphaKeys[0].alpha = 1.0f;
             _alphaKeys[0].time = 0.0f;
 
-            _colorKeys[1].color = GetRandomColor();                
+            _colorKeys[1].color = secondColor;                
             _colorKeys[1].time = 1.0f;  
 
             _alphaKeys[1].alpha = 0.0f;
@@ -92,6 +106,7 @@ namespace Assets.Scripts.Fabric
 
             _gradient.SetKeys(_colorKeys, _alphaKeys);
 
+            _lastColor = secondColor;
             _currentEvaluate = 0f;
         }
 
@@ -100,19 +115,31 @@ namespace Assets.Scripts.Fabric
             return UnityEngine.Random.ColorHSV();
         }   
 
-        private void SetupNewBlock()
+        private void SetupNewBlock(GameObject newBlock)
         {
-            SetColor();
-            SetSize();
+            SetColor(newBlock);
+            SetSize(newBlock);
         }
 
-        private void SetColor()
+        private void SetColor(GameObject newBlock)
         {
             _currentEvaluate += _colorDelta;
-            _newBlock.GetComponent<MeshRenderer>().material.color = _gradient.Evaluate(_currentEvaluate);
+
+            CheckIsColorReached();
+
+            newBlock.GetComponent<MeshRenderer>().material.color = _gradient.Evaluate(_currentEvaluate);
         }
 
-        private void SetSize()
+        private void CheckIsColorReached()
+        {
+            if(_currentEvaluate >= 1)
+            {
+                CreateNewGradient(_lastColor, GetRandomColor());
+                _currentEvaluate = 0f;
+            }
+        }
+
+        private void SetSize(GameObject newBlock)
         {
 
         }

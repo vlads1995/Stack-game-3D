@@ -12,9 +12,7 @@ namespace Assets.Scripts.Controller
         [SerializeField] private GameController _gameController;
         [SerializeField] private GameObject _spawnPoint;
         
-        [SerializeField] private Camera _mainCamera;
-
-        [SerializeField] private float _deltaPos;
+        private const float DeltaPos = 2f;
 
         [SerializeField] private float _stageFlippingSpeed;
 
@@ -43,9 +41,9 @@ namespace Assets.Scripts.Controller
         {
             MoveSpawnPoint();
 
-            Vector3 cameraPos = _mainCamera.gameObject.transform.position;
-            Vector3 targetPos = new Vector3(cameraPos.x, cameraPos.y + _deltaPos, cameraPos.z);
-            MoveCamera(targetPos);
+            Vector3 cameraPos = Camera.main.transform.position;
+            Vector3 targetPos = new Vector3(cameraPos.x, cameraPos.y + DeltaPos, cameraPos.z);
+            StartCoroutine(MoveCamera(targetPos));
         }
 
         private void ResetSession()
@@ -56,21 +54,21 @@ namespace Assets.Scripts.Controller
 
         private void Prepare()
         {
-            _startCameraPos = _mainCamera.gameObject.transform.position;
+            _startCameraPos = Camera.main.transform.position;
             _startSpawnPointPos = _spawnPoint.transform.position;
         }
 
         private void MoveSpawnPoint()
         {             
             Vector3 pointPos = _spawnPoint.transform.position;
-            Vector3 newPos = new Vector3(pointPos.x, pointPos.y + _deltaPos, pointPos.z);
+            Vector3 newPos = new Vector3(pointPos.x, pointPos.y + DeltaPos, pointPos.z);
 
             _spawnPoint.transform.position = newPos;
         }
 
         private IEnumerator MoveCamera(Vector3 targetPos)
-        {
-            Vector3 startPos = _mainCamera.gameObject.transform.position;
+        {            
+            Vector3 startPos = Camera.main.transform.position;
             
             float startTime = Time.realtimeSinceStartup;
             float fraction = 0;
@@ -78,14 +76,14 @@ namespace Assets.Scripts.Controller
             while (fraction < 1)
             {
                 fraction = Mathf.Clamp01((Time.realtimeSinceStartup - startTime) / _stageFlippingSpeed);
-                transform.position = Vector3.Lerp(startPos, targetPos, fraction); 
+                Camera.main.transform.position = Vector3.Lerp(startPos, targetPos, fraction); 
                 yield return null;
             }
         }      
       
         private void ResetCameraPosition()
         {
-            MoveCamera(_startCameraPos);
+            StartCoroutine(MoveCamera(_startCameraPos));
         }
 
         private void ResetSpawnPointPosition()

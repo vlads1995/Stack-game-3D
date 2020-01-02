@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Fabric;
-using System.Collections;
-using System.Collections.Generic;
+using Assets.Scripts.Model;
 using UnityEngine;
 
 namespace Assets.Scripts.Controller
@@ -10,17 +9,51 @@ namespace Assets.Scripts.Controller
         public delegate void LoseGame();
         public LoseGame onGameLost;
 
+        public delegate void BlockStacked();
+        public BlockStacked onBlockStacked;
+
         [SerializeField] private BlockFabric _blockFabric;
         [SerializeField] private BlockController _blockController;
+
+        private Block _currentBlock;
+
+        private void Start()
+        {
+            GenerateBlock();
+        }     
 
         public void GameLost()
         {
             onGameLost?.Invoke();
+        }       
+
+        private void GenerateBlock()
+        {
+            DisableOldBlock();
+            
+            GameObject newBlock = _blockFabric.CreateNewBlock();
+            _blockController.SetNewBlock(newBlock);
+            _currentBlock = newBlock.GetComponent<Block>();
+
+            NewBlockSubscribe();
         }
 
-        public void GenerateBlock()
+        private void DisableOldBlock()
         {
-            _blockController.SetNewBlock(_blockFabric.CreateNewBlock());
+            if(_currentBlock)
+            {               
+                _currentBlock.onBlockStacked -= GenerateBlock;
+                Destroy(_currentBlock);
+                onBlockStacked?.Invoke();
+            }
+        }
+
+        private void NewBlockSubscribe()
+        {
+            if (_currentBlock)
+            {
+                _currentBlock.onBlockStacked += GenerateBlock;
+            }
         }
 
     }
