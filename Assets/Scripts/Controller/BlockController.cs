@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Data.Enum;
 using Assets.Scripts.Model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,13 +9,25 @@ namespace Assets.Scripts.Controller
 {
     public class BlockController : MonoBehaviour
     {
+        [SerializeField] GameController _gameController;
         [SerializeField] public float _speed = 2.0f;
 
         private const int MaxBoundary = 10;
 
         private GameObject _currentBlock;
         private bool _isForward = true;
-       
+
+        private void Awake()
+        {
+            _gameController.onGameLost += GameLost;
+        }
+
+        private void GameLost()
+        {
+            StopAllCoroutines();
+            _currentBlock = null;
+        }
+
         public void SetNewBlock(GameObject newBlock)
         {
             _currentBlock = newBlock;
@@ -27,6 +40,8 @@ namespace Assets.Scripts.Controller
             _currentBlock.GetComponent<Rigidbody>().useGravity = true;
             StopAllCoroutines();
         } 
+
+
 
         private IEnumerator MoveBlock(Vector3 direction)
         {  

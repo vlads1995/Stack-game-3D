@@ -9,6 +9,9 @@ namespace Assets.Scripts.Controller
         public delegate void LoseGame();
         public LoseGame onGameLost;
 
+        public delegate void StartGame();
+        public StartGame onGameStart;
+
         public delegate void BlockStacked();
         public BlockStacked onBlockStacked;
 
@@ -17,9 +20,10 @@ namespace Assets.Scripts.Controller
 
         private Block _currentBlock;
 
-        private void Start()
+        public void StartNewGame()
         {
             GenerateBlock();
+            onGameStart?.Invoke();
         }     
 
         public void GameLost()
