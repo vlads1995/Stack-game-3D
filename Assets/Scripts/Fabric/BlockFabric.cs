@@ -20,8 +20,10 @@ namespace Assets.Scripts.Fabric
         [Header("Parameters")]
         [SerializeField] private GameObject _blockPrefab;
         [SerializeField] private GameObject _spawnPlane;
-        [SerializeField] private GameObject _startBlock; 
+        [SerializeField] private GameObject _startBlock;
+        [SerializeField] private GameObject _parentForBlocks;
         [SerializeField] private List<BlockGenerateData> _blockDatas = new List<BlockGenerateData>();
+
 
         private Gradient _gradient;
         private GradientColorKey[] _colorKeys;
@@ -33,7 +35,7 @@ namespace Assets.Scripts.Fabric
         private Vector3 _lastStackedBlockSize;
  
         private List<GameObject> _allBlocks = new List<GameObject>();
-
+       
         private void Awake()
         {
             PrepareDelegates();
@@ -53,7 +55,7 @@ namespace Assets.Scripts.Fabric
             BlockGenerateData newData = _blockDatas[UnityEngine.Random.Range(0, _blockDatas.Count)];
             GameObject newSpawnPoint = newData.spawnPoints[UnityEngine.Random.Range(0, newData.spawnPoints.Count)];
 
-            GameObject newBlock = Instantiate(_blockPrefab, newSpawnPoint.transform.position, Quaternion.identity);
+            GameObject newBlock = Instantiate(_blockPrefab, newSpawnPoint.transform.position, Quaternion.identity , _parentForBlocks.transform);
             newBlock.GetComponent<Block>().SetNewData(newData);
 
             _allBlocks.Add(newBlock);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Assets.Scripts.Data;
 using Assets.Scripts.Service;
 using UnityEngine;
@@ -14,9 +15,12 @@ namespace Assets.Scripts.Controller
 
         [SerializeField] private Text _scoreText;
         [SerializeField] private Text _bestScoreText;
-        [SerializeField] private Image _backGround;       
+        [SerializeField] private Image _menuBack;
+        [SerializeField] private Material _gameBackMaterial;
 
         [SerializeField] private Animator _animator;
+
+        [SerializeField] private List<Texture> _gameBacks;
          
         private int _currentScore = 0;
         private int _bestScore = 0;
@@ -27,6 +31,7 @@ namespace Assets.Scripts.Controller
         {
             PrepareDelegates();
         }
+ 
 
         private void PrepareDelegates()
         {
@@ -52,8 +57,14 @@ namespace Assets.Scripts.Controller
 
         private void StartGame()
         {
+            SetRandomBack();
             _cameraZoomService.ZoomIn();
             _animator.SetTrigger("NewGame");
+        }
+
+        private void SetRandomBack()
+        {
+            _gameBackMaterial.SetTexture("_MainTex", _gameBacks[UnityEngine.Random.Range(0, _gameBacks.Count)]); 
         }
 
         private void LostGame()
@@ -64,7 +75,7 @@ namespace Assets.Scripts.Controller
         private void SetupBackGround(Sprite screenShoot)
         {
             Debug.Log(screenShoot.GetHashCode());
-            _backGround.sprite = screenShoot;
+            _menuBack.sprite = screenShoot;
         }
 
         private void SetupDataFromLocal(PlayerData currentData)

@@ -81,7 +81,7 @@ namespace Assets.Scripts.Service
 
         public void UpdateScreenShoot()
         {
-            ScreenCapture.CaptureScreenshot(_screenShootPath, 2);
+            ScreenCapture.CaptureScreenshot(_screenShootPath, 1);
             LoadScreenShoot();
         }
 
@@ -101,7 +101,7 @@ namespace Assets.Scripts.Service
             if (File.Exists(filePath))
             {
                 fileData = File.ReadAllBytes(filePath);
-                tex = new Texture2D(500 , 500);
+                tex = new Texture2D(1080, 1920);
                 tex.LoadImage(fileData);
 
                 newSprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f));
