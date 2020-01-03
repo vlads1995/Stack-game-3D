@@ -15,9 +15,7 @@ namespace Assets.Scripts.Service
         
         private const float DEFAULT_SIZE = 20f;
         private const float EPSILON = 0.1f;
-
-        public float _stageFlippingSpeed;  
-
+         
         private IEnumerator _currentCoroutine;
          
         public void ZoomIn()
@@ -33,7 +31,7 @@ namespace Assets.Scripts.Service
 
         private IEnumerator MoveCamera()
         {           
-            float delta = 0.5f;
+            float delta = 0.2f;
 
             bool isFirstBlockOnScreen = false;
             bool isLastBlockOnScreen = false;
@@ -50,6 +48,8 @@ namespace Assets.Scripts.Service
 
                 yield return null;
             }
+
+            yield return new WaitForSeconds(0.5f);
 
             onZoomedOut?.Invoke(); 
         }    

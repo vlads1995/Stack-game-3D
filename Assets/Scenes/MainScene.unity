@@ -1340,7 +1340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _blocksParent: {fileID: 1811092904}
   _startBlock: {fileID: 729946489}
-  _stageFlippingSpeed: 0.5
+  _stageFlippingSpeed: 0.7
 --- !u!1 &729946484
 GameObject:
   m_ObjectHideFlags: 0
