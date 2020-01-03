@@ -33,7 +33,10 @@ namespace Assets.Scripts.Fabric
 
         private float _currentEvaluate = 0;   
         private Vector3 _lastStackedBlockSize;
- 
+
+        private GameObject _lastBlock;
+        private GameObject _currentBlock;
+
         private List<GameObject> _allBlocks = new List<GameObject>();
        
         private void Awake()
@@ -48,15 +51,35 @@ namespace Assets.Scripts.Fabric
         private void SetupStartBlock()
         {
             SetColor(_startBlock);
+            _lastBlock = _startBlock;
         }
 
         public GameObject CreateNewBlock()
         {
+            if(_currentBlock)
+            {
+                _lastBlock = _currentBlock;
+            }
+
+
+            
             BlockGenerateData newData = _blockDatas[UnityEngine.Random.Range(0, _blockDatas.Count)];
             GameObject newSpawnPoint = newData.spawnPoints[UnityEngine.Random.Range(0, newData.spawnPoints.Count)];
 
+           
+
             GameObject newBlock = Instantiate(_blockPrefab, newSpawnPoint.transform.position, Quaternion.identity , _parentForBlocks.transform);
             newBlock.GetComponent<Block>().SetNewData(newData);
+
+            if (newData.MoveDirection == Vector3.right)
+            {
+               // foreach (var item in _blockDatas..spawnPoints)
+                //{
+
+                //}
+            }
+
+            _currentBlock = newBlock;
 
             _allBlocks.Add(newBlock);
             SetupNewBlock(newBlock);
@@ -76,6 +99,8 @@ namespace Assets.Scripts.Fabric
             CreateNewGradient(GetRandomColor(), GetRandomColor());
             SetupStartBlock();
             DestroyAllBlocks();
+
+
         }
 
         private void DestroyAllBlocks()
@@ -120,8 +145,7 @@ namespace Assets.Scripts.Fabric
 
         private void SetupNewBlock(GameObject newBlock)
         {
-            SetColor(newBlock);
-            SetSize(newBlock);
+            SetColor(newBlock);           
         }
 
         private void SetColor(GameObject newBlock)
@@ -141,11 +165,5 @@ namespace Assets.Scripts.Fabric
                 _currentEvaluate = 0f;
             }
         }
-
-        private void SetSize(GameObject newBlock)
-        {
-
-        }
-         
     }
 }
