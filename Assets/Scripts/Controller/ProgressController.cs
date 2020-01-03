@@ -19,8 +19,6 @@ namespace Assets.Scripts.Controller
         private Vector3 _startCameraPos;
         private Vector3 _startSpawnPointPos;
 
-        private bool _isBlockFalling = false;
-
         private void Awake()
         {
             PrepareDelegates();

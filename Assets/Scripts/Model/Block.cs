@@ -18,14 +18,14 @@ namespace Assets.Scripts.Model
 
         private void OnCollisionEnter(Collision collision)
         {
-            TapticManager.Impact(ImpactFeedback.Light);
-            FreezeBlockPosition();
-            onBlockStacked?.Invoke();
+            //TapticManager.Impact(ImpactFeedback.Light);
+            //FreezeBlockPosition();
+            //onBlockStacked?.Invoke();
         }
 
         private void FreezeBlockPosition()
         {
-            GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;            
+            //GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePositionY;            
         }
     }
 }

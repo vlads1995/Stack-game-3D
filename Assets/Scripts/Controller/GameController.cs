@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Fabric;
+﻿using System;
+using Assets.Scripts.Fabric;
 using Assets.Scripts.Model;
 using UnityEngine;
 
@@ -12,20 +13,30 @@ namespace Assets.Scripts.Controller
         public delegate void StartGame();
         public StartGame onGameStart;
 
-        public delegate void BlockStacked();
-        public BlockStacked onBlockStacked;
+        //public delegate void BlockStacked();
+        //public BlockStacked onBlockStacked;
 
         public delegate void StartLoseAnimations();
         public StartLoseAnimations onGameLostAnimations;
 
-        [SerializeField] private BlockFabric _blockFabric;
-        [SerializeField] private BlockController _blockController;
+        //[SerializeField] private BlockFabric _blockFabric;
+        //[SerializeField] private BlockController _blockController;
 
-        private Block _currentBlock;
+        //private Block _currentBlock;
+
+        //private void Awake()
+        //{
+        //    PrepareDelegates();
+        //}
+
+        //private void PrepareDelegates()
+        //{
+        //    _blockController.onBlockStacked += GenerateBlock;
+        //}
 
         public void StartNewGame()
         {
-            GenerateBlock();
+            //GenerateBlock();
             onGameStart?.Invoke();
         }     
 
@@ -39,34 +50,34 @@ namespace Assets.Scripts.Controller
             onGameLost?.Invoke();
         }
 
-        private void GenerateBlock()
-        {
-            DisableOldBlock();
-            
-            GameObject newBlock = _blockFabric.CreateNewBlock();
-            _blockController.SetNewBlock(newBlock);
-            _currentBlock = newBlock.GetComponent<Block>();
+        //private void GenerateBlock()
+        //{
+        //    //DisableOldBlock();            
 
-            NewBlockSubscribe();
-        }
+        //    GameObject newBlock = _blockFabric.CreateNewBlock();
+        //    _blockController.SetNewBlock(newBlock);
+        //   // _currentBlock = newBlock.GetComponent<Block>();
 
-        private void DisableOldBlock()
-        {
-            if(_currentBlock)
-            {               
-                _currentBlock.onBlockStacked -= GenerateBlock;
-                Destroy(_currentBlock);
-                onBlockStacked?.Invoke();
-            }
-        }
+        //    //NewBlockSubscribe();
+        //}
 
-        private void NewBlockSubscribe()
-        {
-            if (_currentBlock)
-            {
-                _currentBlock.onBlockStacked += GenerateBlock;
-            }
-        }
+        //private void DisableOldBlock()
+        //{
+        //    if(_currentBlock)
+        //    {                
+        //        _currentBlock.onBlockStacked -= GenerateBlock;
+        //        //Destroy(_currentBlock);
+        //        onBlockStacked?.Invoke();
+        //    }
+        //}
+
+        //private void NewBlockSubscribe()
+        //{
+        //    if (_currentBlock)
+        //    {
+        //        _currentBlock.onBlockStacked += GenerateBlock;
+        //    }
+        //}
 
     }
 }

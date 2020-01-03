@@ -12,6 +12,7 @@ namespace Assets.Scripts.Controller
         [SerializeField] private GameController _gameController;
         [SerializeField] private LocalDataService _localDataService;
         [SerializeField] private CameraZoomService _cameraZoomService;
+        [SerializeField] private BlockController _blockController;
 
         [SerializeField] private Text _scoreText;
         [SerializeField] private Text _bestScoreText;
@@ -37,7 +38,8 @@ namespace Assets.Scripts.Controller
         {
             _gameController.onGameLostAnimations += LostGame;
             _gameController.onGameStart += StartGame;
-            _gameController.onBlockStacked += IncreaseScore;
+
+            _blockController.onBlockStacked += IncreaseScore;
 
             _localDataService.onDataLoaded += SetupDataFromLocal;
             _localDataService.onScreenShootLoaded += SetupBackGround;
