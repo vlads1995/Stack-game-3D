@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Data;
 using Assets.Scripts.Service;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,23 +14,30 @@ namespace Assets.Scripts.Controller
 
         [SerializeField] private Text _scoreText;
         [SerializeField] private Text _bestScoreText;
-        [SerializeField] private Image _menuBack;
+
+        [SerializeField] private RawImage _menuBack;
         [SerializeField] private Material _gameBackMaterial;
-        
-        [SerializeField] private Sprite _defaultScreenSprite;
         
         [SerializeField] private Animator _animator;
 
-        [SerializeField] private List<Texture> _gameBacks;
-         
         private int _currentScore = 0;
         private int _bestScore = 0;
 
         private PlayerData _playerData;
 
+        private Texture2D backgroundTexture;
+
         private void Awake()
         {
             PrepareDelegates();
+            PrepareTexture();
+        }
+
+        private void PrepareTexture()
+        {
+            backgroundTexture = new Texture2D(1, 2);
+            backgroundTexture.wrapMode = TextureWrapMode.Clamp;
+            backgroundTexture.filterMode = FilterMode.Bilinear;           
         }
 
         private void Start()
@@ -70,22 +76,32 @@ namespace Assets.Scripts.Controller
         }
 
         private void SetRandomBack()
-        {
-            _gameBackMaterial.SetTexture("_MainTex", _gameBacks[UnityEngine.Random.Range(0, _gameBacks.Count)]); 
+        {           
+            SetColor(UnityEngine.Random.ColorHSV(), UnityEngine.Random.ColorHSV());
         }
+
+        public void SetColor(Color color1, Color color2)
+        {
+            backgroundTexture.SetPixels(new Color[] { color1, color2 });
+            backgroundTexture.Apply();            
+            _gameBackMaterial.SetTexture("_MainTex", backgroundTexture);
+        }  
 
         private void LostGame()
         {
             _cameraZoomService.ZoomOut();
         }
 
-        private void SetupBackGround(Sprite screenShoot)
+        private void SetupBackGround(Texture2D screenShoot)
         {            
             if(screenShoot == null)
             {
-                screenShoot = _defaultScreenSprite;
+                SetRandomBack();
+
+                screenShoot = backgroundTexture;
             }
-            _menuBack.sprite = screenShoot;
+
+            _menuBack.texture = screenShoot;
         }
 
         private void SetupDataFromLocal(PlayerData currentData)
@@ -127,7 +143,6 @@ namespace Assets.Scripts.Controller
             _animator.SetTrigger("LostGame");
 
             UpdateScreenShoot();
-
         }
     }
 }

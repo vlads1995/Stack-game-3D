@@ -11,16 +11,16 @@ namespace Assets.Scripts.Service
         public delegate void GotDataFromFile(PlayerData currentData);
         public GotDataFromFile onDataLoaded;
 
-        public delegate void ScreenShootLoaded(Sprite screenShoot);
+        public delegate void ScreenShootLoaded(Texture2D screenShoot);
         public ScreenShootLoaded onScreenShootLoaded;
 
         private PlayerData _playerData = new PlayerData();
 
         private const string _FILE_NAME = "StackData.bin";
-        private const string _SHCREENSHOOT_NAME = "Back.png";
+        private const string _SHCREENSHOOT_NAME = "back.png";
         private string _filePath;
-        //private string _screenShootPath;
-
+        private string _screenShootPath;
+         
         private Sprite _actualScreenShoot;
 
         private void Start()
@@ -30,8 +30,8 @@ namespace Assets.Scripts.Service
         public void Initialize()
         {
             _filePath = Application.persistentDataPath + "/" + _FILE_NAME;
-            //_screenShootPath = Application.path + "/" + _SHCREENSHOOT_NAME;
-            
+            _screenShootPath = Application.persistentDataPath + "/" + _SHCREENSHOOT_NAME;
+
             LoadProgress();
         }
 
@@ -73,33 +73,35 @@ namespace Assets.Scripts.Service
 
         public void UpdateScreenShoot()
         {
-            ScreenCapture.CaptureScreenshot(_SHCREENSHOOT_NAME);
-            Invoke("LoadScreenShoot", 0.1f); 
+            ScreenCapture.CaptureScreenshot(_screenShootPath);
+             
+            Invoke("LoadScreenShoot", 0.2f); 
         }
 
         public void LoadScreenShoot()
         {
-            Sprite newSprite = LoadPNG(_SHCREENSHOOT_NAME);
-            onScreenShootLoaded.Invoke(newSprite);            
+            Texture2D newTex = LoadPNG(_screenShootPath);
+            onScreenShootLoaded.Invoke(newTex);            
         }
+ 
 
-        public Sprite LoadPNG(string filePath)
+        public Texture2D LoadPNG(string filePath)
         {
             Texture2D tex = null;
             byte[] fileData;
 
             Sprite newSprite = null;
-
+             
             if (File.Exists(filePath))
-            {
+            {                 
                 fileData = File.ReadAllBytes(filePath);
                 tex = new Texture2D(1080, 1920);
                 tex.LoadImage(fileData);
 
-                newSprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                //newSprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f));
             }            
 
-            return newSprite;       
+            return tex;       
         }
 
         private void SetDefaultData()

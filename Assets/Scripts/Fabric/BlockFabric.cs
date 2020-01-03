@@ -95,8 +95,6 @@ namespace Assets.Scripts.Fabric
             CreateNewGradient(GetRandomColor(), GetRandomColor());
             SetupStartBlock();
             DestroyAllBlocks();
-
-
         }
 
         private void DestroyAllBlocks()
