@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Data;
+﻿using System;
+using Assets.Scripts.Data;
 using Assets.Scripts.Service;
 using UnityEngine;
 using UnityEngine.UI;
@@ -42,7 +43,7 @@ namespace Assets.Scripts.Controller
 
         private void Start()
         {
-            UpdateScores();
+            UpdateScores();          
         }
 
         private void PrepareDelegates()
@@ -69,8 +70,7 @@ namespace Assets.Scripts.Controller
         }
 
         private void StartGame()
-        {
-            SetRandomBack();
+        {           
             _cameraZoomService.ZoomIn();
             _animator.SetTrigger("NewGame");
         }
@@ -93,11 +93,11 @@ namespace Assets.Scripts.Controller
         }
 
         private void SetupBackGround(Texture2D screenShoot)
-        {            
+        {
+            Debug.Log("setup back");
             if(screenShoot == null)
             {
                 SetRandomBack();
-
                 screenShoot = backgroundTexture;
             }
 

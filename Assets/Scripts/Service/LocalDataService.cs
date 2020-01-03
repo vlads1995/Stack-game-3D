@@ -33,6 +33,7 @@ namespace Assets.Scripts.Service
             _screenShootPath = Application.persistentDataPath + "/" + _SHCREENSHOOT_NAME;
 
             LoadProgress();
+            LoadScreenShoot();
         }
 
         public void SetNewDataAndSave(PlayerData newData)
@@ -53,8 +54,7 @@ namespace Assets.Scripts.Service
                     FileStream file = File.Open(_filePath, FileMode.Open, FileAccess.ReadWrite);
                     _playerData = (PlayerData)bf.Deserialize(file);
 
-                    file.Close();
-                    LoadScreenShoot();
+                    file.Close();                    
                     ShareLocalData();
                     return;
                 }
@@ -73,8 +73,7 @@ namespace Assets.Scripts.Service
 
         public void UpdateScreenShoot()
         {
-            ScreenCapture.CaptureScreenshot(_screenShootPath);
-             
+            ScreenCapture.CaptureScreenshot(_screenShootPath);             
             Invoke("LoadScreenShoot", 0.2f); 
         }
 
@@ -82,23 +81,18 @@ namespace Assets.Scripts.Service
         {
             Texture2D newTex = LoadPNG(_screenShootPath);
             onScreenShootLoaded.Invoke(newTex);            
-        }
- 
+        } 
 
         public Texture2D LoadPNG(string filePath)
         {
             Texture2D tex = null;
             byte[] fileData;
-
-            Sprite newSprite = null;
              
             if (File.Exists(filePath))
             {                 
                 fileData = File.ReadAllBytes(filePath);
                 tex = new Texture2D(1080, 1920);
-                tex.LoadImage(fileData);
-
-                //newSprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                tex.LoadImage(fileData); 
             }            
 
             return tex;       
