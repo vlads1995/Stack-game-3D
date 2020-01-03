@@ -162,22 +162,35 @@ namespace Assets.Scripts.Controller
         {
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
+            cube.GetComponent<Renderer>().material = blockMaterial;
+            cube.AddComponent<Rigidbody>();
+
+            float multiplier = 0;
+
+            if (_isForward)
+            {
+                multiplier = 1;
+            }
+            else
+            {
+                multiplier = -1;
+            }
+
             if (_direction == Vector3.right)
             {
                 cube.transform.localScale = new Vector3(fallingBlockSize, _currentBlock.transform.localScale.y, _currentBlock.transform.localScale.z);
                 cube.transform.position = new Vector3(fallingBlockZPos, _currentBlock.transform.position.y, _currentBlock.transform.position.z);
+                cube.GetComponent<Rigidbody>().angularVelocity = Vector3.back * 10 * multiplier;
             }
 
             if (_direction == Vector3.forward)
             {
                 cube.transform.localScale = new Vector3(_currentBlock.transform.localScale.x, _currentBlock.transform.localScale.y, fallingBlockSize);
                 cube.transform.position = new Vector3(_currentBlock.transform.position.x, _currentBlock.transform.position.y, fallingBlockZPos);
+                cube.GetComponent<Rigidbody>().angularVelocity = Vector3.right * 10 * multiplier;
             }
- 
-            cube.GetComponent<Renderer>().material = blockMaterial;
-            cube.AddComponent<Rigidbody>();
-
-            Destroy(cube.gameObject, 0.5f);
+  
+            Destroy(cube.gameObject, 4f);
         }
 
         private IEnumerator MoveBlock(Vector3 direction)
