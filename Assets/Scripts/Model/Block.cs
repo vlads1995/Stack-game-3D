@@ -14,11 +14,6 @@ namespace Assets.Scripts.Model
         public void SetNewData(BlockGenerateData data)
         {
             blockData = data;
-        }
-
-        private void OnCollisionEnter(Collision collision)
-        {
-            TapticManager.Impact(ImpactFeedback.Light);            
-        }
+        } 
     }
 }

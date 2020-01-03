@@ -2,6 +2,7 @@
 using Assets.Scripts.Model;
 using System;
 using System.Collections;
+using TapticPlugin;
 using UnityEngine;
 
 namespace Assets.Scripts.Controller
@@ -43,8 +44,7 @@ namespace Assets.Scripts.Controller
         public void SetNewBlock(GameObject newBlock)
         {
             if(_currentBlock)
-            {
-                _currentBlock.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            {               
                 _lastBlock = _currentBlock;
             }            
 
@@ -65,6 +65,8 @@ namespace Assets.Scripts.Controller
             if (_isMoving)
             {
                 StopAllCoroutines();
+
+                TapticManager.Impact(ImpactFeedback.Light);
 
                 _isMoving = false;
 
@@ -90,6 +92,7 @@ namespace Assets.Scripts.Controller
                 {
                     SplitBlockOnZ(hangover, direction);
                 }
+
                 onBlockStacked?.Invoke();
                 Invoke("GenerateNewBlock", 1f);
             }
@@ -173,9 +176,6 @@ namespace Assets.Scripts.Controller
  
             cube.GetComponent<Renderer>().material = blockMaterial;
             cube.AddComponent<Rigidbody>();
-
-            cube.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation; 
-            cube.GetComponent<Rigidbody>().mass = 1f;
 
             Destroy(cube.gameObject, 0.5f);
         }

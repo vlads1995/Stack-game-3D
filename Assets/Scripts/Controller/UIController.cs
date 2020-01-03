@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Assets.Scripts.Data;
+﻿using Assets.Scripts.Data;
 using Assets.Scripts.Service;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +17,9 @@ namespace Assets.Scripts.Controller
         [SerializeField] private Text _bestScoreText;
         [SerializeField] private Image _menuBack;
         [SerializeField] private Material _gameBackMaterial;
-
+        
+        [SerializeField] private Sprite _defaultScreenSprite;
+        
         [SerializeField] private Animator _animator;
 
         [SerializeField] private List<Texture> _gameBacks;
@@ -79,8 +80,11 @@ namespace Assets.Scripts.Controller
         }
 
         private void SetupBackGround(Sprite screenShoot)
-        {
-            Debug.Log(screenShoot.GetHashCode());
+        {            
+            if(screenShoot == null)
+            {
+                screenShoot = _defaultScreenSprite;
+            }
             _menuBack.sprite = screenShoot;
         }
 
@@ -120,7 +124,10 @@ namespace Assets.Scripts.Controller
         private void GameLost()
         {
             UpdateScores();
-            _animator.SetTrigger("LostGame");    
+            _animator.SetTrigger("LostGame");
+
+            UpdateScreenShoot();
+
         }
     }
 }

@@ -1,11 +1,8 @@
 ﻿using Assets.Scripts.Data;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Assets.Scripts.Service
 {
@@ -17,15 +14,12 @@ namespace Assets.Scripts.Service
         public delegate void ScreenShootLoaded(Sprite screenShoot);
         public ScreenShootLoaded onScreenShootLoaded;
 
-        [SerializeField] private Sprite _defaultScreenSprite;
-
-
         private PlayerData _playerData = new PlayerData();
 
         private const string _FILE_NAME = "StackData.bin";
         private const string _SHCREENSHOOT_NAME = "Back.png";
         private string _filePath;
-        private string _screenShootPath;
+        //private string _screenShootPath;
 
         private Sprite _actualScreenShoot;
 
@@ -36,7 +30,7 @@ namespace Assets.Scripts.Service
         public void Initialize()
         {
             _filePath = Application.persistentDataPath + "/" + _FILE_NAME;
-            _screenShootPath = Application.persistentDataPath + "/" + _SHCREENSHOOT_NAME;
+            //_screenShootPath = Application.path + "/" + _SHCREENSHOOT_NAME;
             
             LoadProgress();
         }
@@ -54,8 +48,7 @@ namespace Assets.Scripts.Service
             try
             {
                 if (File.Exists(_filePath))
-                {
-                    Debug.Log("File Exists");
+                {                    
                     BinaryFormatter bf = new BinaryFormatter();
                     FileStream file = File.Open(_filePath, FileMode.Open, FileAccess.ReadWrite);
                     _playerData = (PlayerData)bf.Deserialize(file);
@@ -66,8 +59,7 @@ namespace Assets.Scripts.Service
                     return;
                 }
                 else
-                {
-                    Debug.Log("File Not Exists");
+                {                    
                     SetDefaultData();
                 }
             }
@@ -81,13 +73,13 @@ namespace Assets.Scripts.Service
 
         public void UpdateScreenShoot()
         {
-            ScreenCapture.CaptureScreenshot(_screenShootPath, 1);
-            LoadScreenShoot();
+            ScreenCapture.CaptureScreenshot(_SHCREENSHOOT_NAME);
+            Invoke("LoadScreenShoot", 0.1f); 
         }
 
         public void LoadScreenShoot()
         {
-            Sprite newSprite = LoadPNG(_screenShootPath);
+            Sprite newSprite = LoadPNG(_SHCREENSHOOT_NAME);
             onScreenShootLoaded.Invoke(newSprite);            
         }
 
@@ -96,7 +88,7 @@ namespace Assets.Scripts.Service
             Texture2D tex = null;
             byte[] fileData;
 
-            Sprite newSprite;
+            Sprite newSprite = null;
 
             if (File.Exists(filePath))
             {
@@ -105,11 +97,7 @@ namespace Assets.Scripts.Service
                 tex.LoadImage(fileData);
 
                 newSprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f));
-            }
-            else
-            {
-                newSprite = _defaultScreenSprite;
-            }
+            }            
 
             return newSprite;       
         }
@@ -117,8 +105,7 @@ namespace Assets.Scripts.Service
         private void SetDefaultData()
         {
             _playerData.playerScore = 0;            
-            SaveProgress();
-            onScreenShootLoaded.Invoke(_defaultScreenSprite);
+            SaveProgress();           
             ShareLocalData();
         }
 
@@ -131,8 +118,7 @@ namespace Assets.Scripts.Service
         }
 
         private void ShareLocalData()
-        {
-            Debug.Log("ShareLocalData");
+        {            
             onDataLoaded.Invoke(_playerData);
         }
     }
