@@ -25,6 +25,8 @@ namespace Assets.Scripts.Controller
 
         private bool _isForward = true;
 
+        private Vector3 _direction;
+
         private void Awake()
         {
             _gameController.onGameLost += StopMoving;
@@ -50,7 +52,9 @@ namespace Assets.Scripts.Controller
             {
                 _currentBlock.transform.localScale = _lastBlock.transform.localScale;
             }
-           
+
+            _direction = _currentBlock.GetComponent<Block>().blockData.MoveDirection;
+
             StartCoroutine(MoveBlock(_currentBlock.GetComponent<Block>().blockData.MoveDirection));          
         }
 
@@ -59,28 +63,65 @@ namespace Assets.Scripts.Controller
             StopAllCoroutines();
 
             _currentBlock.GetComponent<Rigidbody>().useGravity = true;
-            
-            float hangover = _currentBlock.transform.position.z - _lastBlock.transform.position.z;
-            float direction = hangover > 0 ? 1f : -1f;
 
-            if(Mathf.Abs(hangover) >= _lastBlock.transform.localScale.z)
+            float hangover = GetHangover();
+            float direction = hangover > 0 ? 1f : -1f;
+                        
+
+            if (Mathf.Abs(hangover) >= _lastBlock.transform.localScale.z)
             {
                 _lastBlock = _startBlock;
                 _currentBlock = null;
                 _gameController.StartAnimationsOnLose();
                 return;
+            }           
+            
+            SplitBlockOnX(hangover, direction);           
+            SplitBlockOnZ(hangover, direction);
+            
+            onBlockStacked?.Invoke();  
+            GenerateNewBlock();
+        }
+
+        private float GetHangover()
+        {
+            float newHangover = 0;
+
+            if (_direction == Vector3.right)
+            {
+                newHangover = _currentBlock.transform.position.x - _lastBlock.transform.position.x;
             }
 
-            SplitBlockOnZ(hangover, direction);
-            onBlockStacked?.Invoke();            
-            
+            if (_direction == Vector3.forward)
+            {
+                newHangover = _currentBlock.transform.position.z - _lastBlock.transform.position.z;
+            }
 
-            GenerateNewBlock();
+            return newHangover;
         }
 
         public void GenerateNewBlock()
         {           
             SetNewBlock(_blockFabric.CreateNewBlock());
+        }
+
+        private void SplitBlockOnX(float hangover, float direction)
+        {
+            float newXSize = _lastBlock.transform.localScale.x - Mathf.Abs(hangover);
+            float fallingBlockSize = _currentBlock.transform.localScale.x - newXSize;
+
+            float newPos = _lastBlock.transform.position.x + (hangover / 2);
+
+            _currentBlock.transform.localScale = new Vector3(newXSize, _currentBlock.transform.localScale.y, _currentBlock.transform.localScale.z);
+            _currentBlock.transform.position = new Vector3(newPos,  _currentBlock.transform.position.y, _currentBlock.transform.position.z);
+
+            float cubeEdge = _currentBlock.transform.position.x + (newXSize / 2f * direction);
+            float fallingBlockPos = cubeEdge + fallingBlockSize / 2f * direction;
+
+            Material material = _currentBlock.GetComponent<Renderer>().material;
+
+            SpawnFallingCube(fallingBlockPos, fallingBlockSize, material);
+
         }
 
         private void SplitBlockOnZ(float hangover, float direction)
@@ -105,9 +146,19 @@ namespace Assets.Scripts.Controller
         private void SpawnFallingCube(float fallingBlockZPos, float fallingBlockSize, Material blockMaterial)
         {
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            cube.transform.localScale = new Vector3(_currentBlock.transform.localScale.x, _currentBlock.transform.localScale.y, fallingBlockSize);
-            cube.transform.position = new Vector3(_currentBlock.transform.position.x, _currentBlock.transform.position.y, fallingBlockZPos);
 
+            if (_direction == Vector3.right)
+            {
+                cube.transform.localScale = new Vector3(fallingBlockSize, _currentBlock.transform.localScale.y, _currentBlock.transform.position.z);
+                cube.transform.position = new Vector3(fallingBlockZPos, _currentBlock.transform.position.y, _currentBlock.transform.position.z);
+            }
+
+            if (_direction == Vector3.forward)
+            {
+                cube.transform.localScale = new Vector3(_currentBlock.transform.localScale.x, _currentBlock.transform.localScale.y, fallingBlockSize);
+                cube.transform.position = new Vector3(_currentBlock.transform.position.x, _currentBlock.transform.position.y, fallingBlockZPos);
+            }
+ 
             cube.GetComponent<Renderer>().material = blockMaterial;
             cube.AddComponent<Rigidbody>();
 
