@@ -175,7 +175,7 @@ namespace Assets.Scripts.Controller
             cube.AddComponent<Rigidbody>();
 
             cube.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation; 
-            cube.GetComponent<Rigidbody>().mass = 5f;
+            cube.GetComponent<Rigidbody>().mass = 1f;
 
             Destroy(cube.gameObject, 0.5f);
         }
@@ -214,8 +214,7 @@ namespace Assets.Scripts.Controller
             StopAllCoroutines();
             _isMoving = false;
             _currentBlock = null;
-            _lastBlock = _startBlock;
-             
+            _lastBlock = _startBlock;             
         }
 
     }

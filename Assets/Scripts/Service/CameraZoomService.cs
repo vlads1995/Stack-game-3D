@@ -1,6 +1,4 @@
-﻿using Assets.Scripts.Controller;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using UnityEngine;
 
 namespace Assets.Scripts.Service
@@ -17,8 +15,6 @@ namespace Assets.Scripts.Service
         
         private const float DEFAULT_SIZE = 20f;
         private const float EPSILON = 0.1f;
-
-        public float TARGET_SIZE = 40f;
 
         public float _stageFlippingSpeed;  
 

@@ -75,16 +75,6 @@ namespace Assets.Scripts.Fabric
                 newBlock.transform.position = new Vector3(x, newSpawnPoint.transform.position.y, z);
             }
 
-            /*if (newData.MoveDirection == Vector3.right)
-            {
-                List<GameObject> points = _blockDatas.Find(data => data == newData).spawnPoints;
-
-                foreach (var item in points)
-                {
-                    item
-                }
-            }*/
-
             _currentBlock = newBlock;
 
             _allBlocks.Add(newBlock);
