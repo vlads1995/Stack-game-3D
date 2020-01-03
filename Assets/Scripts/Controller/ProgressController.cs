@@ -19,6 +19,10 @@ namespace Assets.Scripts.Controller
         private Vector3 _startCameraPos;
         private Vector3 _startSpawnPointPos;
 
+        private const int _START_BLOCK_NUMBER = 5;
+
+        private int _currentBlockNumber = 0;
+
         private void Awake()
         {
             PrepareDelegates();
@@ -36,7 +40,7 @@ namespace Assets.Scripts.Controller
         }
  
         private void OnBlockGenerated()
-        {
+        {            
             MoveSpawnPoint();
 
             Vector3 cameraPos = Camera.main.transform.position;
@@ -48,6 +52,8 @@ namespace Assets.Scripts.Controller
         {
             ResetSpawnPointPosition();
             ResetCameraPosition();
+
+            _currentBlockNumber = 0;
         }       
 
         private void Prepare()
@@ -65,7 +71,14 @@ namespace Assets.Scripts.Controller
         }
 
         private IEnumerator MoveCamera(Vector3 targetPos)
-        {            
+        {
+            _currentBlockNumber++;
+
+            if (_currentBlockNumber < _START_BLOCK_NUMBER)
+            {
+                yield break;
+            }
+
             Vector3 startPos = Camera.main.transform.position;
             
             float startTime = Time.realtimeSinceStartup;

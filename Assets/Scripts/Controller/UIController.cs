@@ -32,7 +32,11 @@ namespace Assets.Scripts.Controller
         {
             PrepareDelegates();
         }
- 
+
+        private void Start()
+        {
+            UpdateScores();
+        }
 
         private void PrepareDelegates()
         {

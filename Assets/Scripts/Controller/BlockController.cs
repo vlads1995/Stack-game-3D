@@ -27,6 +27,8 @@ namespace Assets.Scripts.Controller
 
         private Vector3 _direction;
 
+        private bool _isMoving = false;
+
         private void Awake()
         {
             _gameController.onGameLost += StopMoving;
@@ -42,7 +44,7 @@ namespace Assets.Scripts.Controller
         {
             if(_currentBlock)
             {
-                _currentBlock.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezePosition;
+                _currentBlock.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
                 _lastBlock = _currentBlock;
             }            
 
@@ -60,27 +62,37 @@ namespace Assets.Scripts.Controller
 
         public void ReleaseBlock()
         {
-            StopAllCoroutines();
-
-            _currentBlock.GetComponent<Rigidbody>().useGravity = true;
-
-            float hangover = GetHangover();
-            float direction = hangover > 0 ? 1f : -1f;
-                        
-
-            if (Mathf.Abs(hangover) >= _lastBlock.transform.localScale.z)
+            if (_isMoving)
             {
-                _lastBlock = _startBlock;
-                _currentBlock = null;
-                _gameController.StartAnimationsOnLose();
-                return;
-            }           
-            
-            SplitBlockOnX(hangover, direction);           
-            SplitBlockOnZ(hangover, direction);
-            
-            onBlockStacked?.Invoke();  
-            GenerateNewBlock();
+                StopAllCoroutines();
+
+                _isMoving = false;
+
+                float hangover = GetHangover();
+                float direction = hangover > 0 ? 1f : -1f;
+
+                float max = _direction == Vector3.right ? _lastBlock.transform.localScale.x : _lastBlock.transform.localScale.z;
+
+                if (Mathf.Abs(hangover) >= max)
+                {
+                    _lastBlock = _startBlock;
+                    _currentBlock = null;
+                    _gameController.StartAnimationsOnLose();
+                    return;
+                }
+
+                if (_direction == Vector3.right)
+                {
+                    SplitBlockOnX(hangover, direction);
+                }
+
+                if (_direction == Vector3.forward)
+                {
+                    SplitBlockOnZ(hangover, direction);
+                }
+                onBlockStacked?.Invoke();
+                Invoke("GenerateNewBlock", 1f);
+            }
         }
 
         private float GetHangover()
@@ -101,7 +113,7 @@ namespace Assets.Scripts.Controller
         }
 
         public void GenerateNewBlock()
-        {           
+        {   
             SetNewBlock(_blockFabric.CreateNewBlock());
         }
 
@@ -149,7 +161,7 @@ namespace Assets.Scripts.Controller
 
             if (_direction == Vector3.right)
             {
-                cube.transform.localScale = new Vector3(fallingBlockSize, _currentBlock.transform.localScale.y, _currentBlock.transform.position.z);
+                cube.transform.localScale = new Vector3(fallingBlockSize, _currentBlock.transform.localScale.y, _currentBlock.transform.localScale.z);
                 cube.transform.position = new Vector3(fallingBlockZPos, _currentBlock.transform.position.y, _currentBlock.transform.position.z);
             }
 
@@ -162,14 +174,16 @@ namespace Assets.Scripts.Controller
             cube.GetComponent<Renderer>().material = blockMaterial;
             cube.AddComponent<Rigidbody>();
 
-            cube.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation;
+            cube.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotation; 
             cube.GetComponent<Rigidbody>().mass = 5f;
 
-            Destroy(cube.gameObject, 1f);
+            Destroy(cube.gameObject, 0.5f);
         }
 
         private IEnumerator MoveBlock(Vector3 direction)
-        {  
+        {
+            _isMoving = true;
+
             while (true)
             {                
                 if (_isForward)
@@ -198,6 +212,7 @@ namespace Assets.Scripts.Controller
         private void StopMoving()
         {
             StopAllCoroutines();
+            _isMoving = false;
             _currentBlock = null;
             _lastBlock = _startBlock;
              

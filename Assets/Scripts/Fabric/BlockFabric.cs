@@ -60,24 +60,30 @@ namespace Assets.Scripts.Fabric
             {
                 _lastBlock = _currentBlock;
             }
-
-
             
             BlockGenerateData newData = _blockDatas[UnityEngine.Random.Range(0, _blockDatas.Count)];
-            GameObject newSpawnPoint = newData.spawnPoints[UnityEngine.Random.Range(0, newData.spawnPoints.Count)];
-
-           
+            GameObject newSpawnPoint = newData.spawnPoints[UnityEngine.Random.Range(0, newData.spawnPoints.Count)];                      
 
             GameObject newBlock = Instantiate(_blockPrefab, newSpawnPoint.transform.position, Quaternion.identity , _parentForBlocks.transform);
             newBlock.GetComponent<Block>().SetNewData(newData);
 
-            if (newData.MoveDirection == Vector3.right)
+            if (_lastBlock)
             {
-               // foreach (var item in _blockDatas..spawnPoints)
-                //{
+                float x = newData.MoveDirection == Vector3.right ? newSpawnPoint.transform.position.x : _lastBlock.transform.position.x;
+                float z = newData.MoveDirection == Vector3.forward ? newSpawnPoint.transform.position.z : _lastBlock.transform.position.z;
 
-                //}
+                newBlock.transform.position = new Vector3(x, newSpawnPoint.transform.position.y, z);
             }
+
+            /*if (newData.MoveDirection == Vector3.right)
+            {
+                List<GameObject> points = _blockDatas.Find(data => data == newData).spawnPoints;
+
+                foreach (var item in points)
+                {
+                    item
+                }
+            }*/
 
             _currentBlock = newBlock;
 
