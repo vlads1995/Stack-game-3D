@@ -15,6 +15,9 @@ namespace Assets.Scripts.Controller
         public delegate void BlockStacked();
         public BlockStacked onBlockStacked;
 
+        public delegate void StartLoseAnimations();
+        public StartLoseAnimations onGameLostAnimations;
+
         [SerializeField] private BlockFabric _blockFabric;
         [SerializeField] private BlockController _blockController;
 
@@ -26,10 +29,15 @@ namespace Assets.Scripts.Controller
             onGameStart?.Invoke();
         }     
 
-        public void GameLost()
+        public void StartAnimationsOnLose()
+        {
+            onGameLostAnimations?.Invoke();
+        }      
+        
+        public void InvokeGameLost()
         {
             onGameLost?.Invoke();
-        }       
+        }
 
         private void GenerateBlock()
         {

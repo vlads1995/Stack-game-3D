@@ -72,6 +72,7 @@ namespace Assets.Scripts.Fabric
         private void OnGameLost()
         {
             CreateNewGradient(GetRandomColor(), GetRandomColor());
+            SetupStartBlock();
             DestroyAllBlocks();
         }
 

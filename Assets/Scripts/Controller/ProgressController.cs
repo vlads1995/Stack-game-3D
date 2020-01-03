@@ -34,7 +34,7 @@ namespace Assets.Scripts.Controller
         private void PrepareDelegates()
         {
             _blockFabric.onBlockGenerated += OnBlockGenerated;
-            _gameController.onGameLost += ResetSession;
+            _gameController.onGameLost += ResetProgress;
         }
  
         private void OnBlockGenerated()
@@ -46,7 +46,7 @@ namespace Assets.Scripts.Controller
             StartCoroutine(MoveCamera(targetPos));
         }
 
-        private void ResetSession()
+        private void ResetProgress()
         {
             ResetSpawnPointPosition();
             ResetCameraPosition();

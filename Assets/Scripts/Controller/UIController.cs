@@ -2,23 +2,22 @@
 using Assets.Scripts.Data;
 using Assets.Scripts.Service;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.Controller
 {
     public class UIController : MonoBehaviour
     {
-        [SerializeField] private Text _scoreText;
-        [SerializeField] private Text _bestScoreText;
-
-        [SerializeField] private Image _backGround;
-
         [SerializeField] private GameController _gameController;
         [SerializeField] private LocalDataService _localDataService;
- 
-        [SerializeField] private Animator _animator;
+        [SerializeField] private CameraZoomService _cameraZoomService;
 
+        [SerializeField] private Text _scoreText;
+        [SerializeField] private Text _bestScoreText;
+        [SerializeField] private Image _backGround;       
+
+        [SerializeField] private Animator _animator;
+         
         private int _currentScore = 0;
         private int _bestScore = 0;
 
@@ -31,16 +30,35 @@ namespace Assets.Scripts.Controller
 
         private void PrepareDelegates()
         {
-            _gameController.onGameLost += GameLost;
+            _gameController.onGameLostAnimations += LostGame;
             _gameController.onGameStart += StartGame;
             _gameController.onBlockStacked += IncreaseScore;
+
             _localDataService.onDataLoaded += SetupDataFromLocal;
             _localDataService.onScreenShootLoaded += SetupBackGround;
+
+            _cameraZoomService.onZoomedOut += GameLost;
+        }
+
+        public void UpdateScreenShoot()
+        {
+            _localDataService.UpdateScreenShoot();
+        }
+
+        public void SetGameLost()
+        {
+            _gameController.InvokeGameLost();
         }
 
         private void StartGame()
         {
+            _cameraZoomService.ZoomIn();
             _animator.SetTrigger("NewGame");
+        }
+
+        private void LostGame()
+        {
+            _cameraZoomService.ZoomOut();
         }
 
         private void SetupBackGround(Sprite screenShoot)
@@ -56,7 +74,7 @@ namespace Assets.Scripts.Controller
             UpdateScoreText(_bestScoreText, _bestScore);
         } 
 
-        public void IncreaseScore()
+        private void IncreaseScore()
         {
             _currentScore++;
             UpdateScoreText(_scoreText, _currentScore);
@@ -80,19 +98,12 @@ namespace Assets.Scripts.Controller
         private void UpdateScoreText(Text updateText, int score)
         {
             updateText.text = score.ToString();
-        }
-
-        private void UpdateScreenShoot()
-        {
-            _localDataService.UpdateScreenShoot();
-        }
+        }       
 
         private void GameLost()
         {
             UpdateScores();
-            UpdateScreenShoot();
-            _animator.SetTrigger("LostGame");
-            
-        }      
+            _animator.SetTrigger("LostGame");    
+        }
     }
 }

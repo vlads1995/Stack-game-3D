@@ -1,8 +1,6 @@
-﻿using Assets.Scripts.Data.Enum;
-using Assets.Scripts.Model;
+﻿using Assets.Scripts.Model;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Controller
@@ -19,13 +17,7 @@ namespace Assets.Scripts.Controller
 
         private void Awake()
         {
-            _gameController.onGameLost += GameLost;
-        }
-
-        private void GameLost()
-        {
-            StopAllCoroutines();
-            _currentBlock = null;
+            _gameController.onGameLost += StopMoving;
         }
 
         public void SetNewBlock(GameObject newBlock)
@@ -35,13 +27,10 @@ namespace Assets.Scripts.Controller
         }
 
         public void ReleaseBlock()
-        {
-            Debug.Log(_currentBlock);
+        {           
             _currentBlock.GetComponent<Rigidbody>().useGravity = true;
             StopAllCoroutines();
         } 
-
-
 
         private IEnumerator MoveBlock(Vector3 direction)
         {  
@@ -68,7 +57,13 @@ namespace Assets.Scripts.Controller
 
                 yield return new WaitForEndOfFrame();
             }
-        } 
+        }
+
+        private void StopMoving()
+        {
+            StopAllCoroutines();
+            _currentBlock = null;
+        }
 
     }
 }

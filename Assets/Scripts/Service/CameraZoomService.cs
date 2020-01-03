@@ -1,29 +1,32 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Controller;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Service
 {
     public class CameraZoomService : MonoBehaviour
-    {        
-                
-        private const float DEFAULT_SIZE = 12f;
+    {
+        public delegate void ZoomedOut();
+        public ZoomedOut onZoomedOut;
+        
+        private const float DEFAULT_SIZE = 20f;
         private const float EPSILON = 0.1f;
 
-        public float TARGET_SIZE = 23;
+        public float TARGET_SIZE = 40f;
 
-        public float _stageFlippingSpeed; //public for debug, make private after define
+        public float _stageFlippingSpeed;  
 
         private IEnumerator _currentCoroutine;
          
         public void ZoomIn()
         {
-            //zoom in 
+            Camera.main.orthographicSize = DEFAULT_SIZE;
+            
         }
 
         public void ZoomOut()
-        {
-           
+        {           
             StartCoroutine(MoveCamera(TARGET_SIZE));
         }
 
@@ -31,8 +34,7 @@ namespace Assets.Scripts.Service
         {
             float startTime = Time.realtimeSinceStartup;
             float fraction = 0;
-
-            Vector3 startPos = transform.position;
+             
             float startSize = Camera.main.orthographicSize;
 
             while (fraction < 1)
@@ -42,8 +44,8 @@ namespace Assets.Scripts.Service
                 Camera.main.orthographicSize = Mathf.Lerp(startSize, zoomTarget, fraction);
 
                 if (fraction == 1)
-                {  
-                    //set trigger
+                {
+                    onZoomedOut?.Invoke();
                 }
 
                 yield return null;
