@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Data;
+using TapticPlugin;
 using UnityEngine;
 
 namespace Assets.Scripts.Model
@@ -16,7 +17,8 @@ namespace Assets.Scripts.Model
         }
 
         private void OnCollisionEnter(Collision collision)
-        {            
+        {
+            TapticManager.Impact(ImpactFeedback.Light);
             FreezeBlockPosition();
             onBlockStacked?.Invoke();
         }
